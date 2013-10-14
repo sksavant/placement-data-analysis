@@ -90,6 +90,8 @@ class PlacementsWeb:
         self.br.open(req)
         html = self.br.response().read()
         self.br.back()
+        if 'Error!!!! please try again' in html:
+            raise Exception('No JAF no. '+str(jafno)+' of '+compname)
         return compname,jafno,html
 
     def getLinkJAFPage(self,l):
