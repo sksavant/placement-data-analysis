@@ -15,5 +15,16 @@ def getAllJAFs():
         print j.getJAFString()
         break
 
+def saveAllHTML():
+    p = PlacementsWeb()
+    p.login()
+    for l in p.getJAFLinks():
+        cn,jn,html = p.getJAFPage(l)
+        print cn,jn
+        f = open("../data/"+cn+str(jn)+".html",'w')
+        f.write(html)
+        f.close()
+
 if __name__=='__main__':
-    getAllJAFs()
+    #getAllJAFs()
+    saveAllHTML()
