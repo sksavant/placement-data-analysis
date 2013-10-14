@@ -4,10 +4,12 @@ import cookielib
 import re
 import json
 from authenticate import Authentication
+from mechanize import Link
 
 placement_login_page = "http://placements.iitb.ac.in/placements/login.jsp"
 placement_home = 'http://placements.iitb.ac.in/placements/studenthome.jsp'
 placement_jafs_page = 'http://placements.iitb.ac.in/placements/studjaf4studnew.jsp'
+jaf_base_url = 'http://placements.iitb.ac.in/placements/studjaf4studnew.jsp'
 compnameregex = re.compile('(?<=\?complogin\=)\S+(?=&)')
 jafnoregex = re.compile('(?<=\&jafsrno\=)[0-9]+')
 jafpageurlregex = re.compile('http\:\/\/placements\.iitb\.ac\.in\/placements\/studjafview\.jsp\?complogin\=\S+\&jafsrno\=[0-9]+')
@@ -76,7 +78,21 @@ class PlacementsWeb:
         #    self.getJAFInfo(l)
         #print no_of_jafs
 
-    def getJAFPage(self,l):
+    def getCompJAFPage(self, compname, jafno):
+        try:
+            assert self.br.geturl() == placement_jafs_page
+        except AssertionError:
+            print "Going to JAF List page first"
+            self.getJAFLinks()
+        _url='studjafview.jsp?complogin='+compname+'&jafsrno='+str(jafno)
+        l = Link(base_url=jaf_base_url, url=_url, text=compname, tag='a', attrs=[('href',_url)])
+        req = self.br.click_link(l)
+        self.br.open(req)
+        html = self.br.response().read()
+        self.br.back()
+        return compname,jafno,html
+
+    def getLinkJAFPage(self,l):
         req = self.br.click_link(text=l.text)
         self.br.open(req)
         assert jafpageurlregex.match(self.br.geturl())

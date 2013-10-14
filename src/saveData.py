@@ -15,16 +15,26 @@ def getAllJAFs():
         print j.getJAFString()
         break
 
+def writeJAFtoFile(cn, jn, html):
+    f = open("../data/"+cn+str(jn)+".html",'w')
+    f.write(html)
+    f.close()
+
 def saveAllHTML():
     p = PlacementsWeb()
     p.login()
     for l in p.getJAFLinks():
         cn,jn,html = p.getJAFPage(l)
+        writeJAFtoFile(cn,jn,html)
         print cn,jn
-        f = open("../data/"+cn+str(jn)+".html",'w')
-        f.write(html)
-        f.close()
+
+def printJAFHTML(compname, jafno):
+    p = PlacementsWeb()
+    p.login()
+    cn,jn,html = p.getCompJAFPage(compname, jafno)
+    writeJAFtoFile(cn,jn,html)
 
 if __name__=='__main__':
     #getAllJAFs()
-    saveAllHTML()
+    #saveAllHTML()
+    printJAFHTML("walmart",1)
