@@ -18,8 +18,8 @@ class JAFSaver:
         self.linklist = self.p.getJAFLinks()
 
     def getAllJAFs(self):
-        for l in linklist:
-            cn,jn,html = self.p.getJAFPage(l)
+        for l in self.linklist:
+            cn,jn,html = self.p.getLinkJAFPage(l)
             j = JAF(cn,jn)
             jr = JAFReader(html,j)
             jr.parseInfo()
@@ -27,8 +27,8 @@ class JAFSaver:
             break
 
     def saveAllHTML(self):
-        for l in linklist:
-            cn,jn,html = p.getJAFPage(l)
+        for l in self.linklist:
+            cn,jn,html = self.p.getLinkJAFPage(l)
             writeJAFtoFile(cn,jn,html)
             print cn,jn
 
@@ -54,7 +54,7 @@ class JAFSaver:
 
 if __name__=='__main__':
     #getAllJAFs()
-    #saveAllHTML()
     s = JAFSaver()
+    s.saveAllHTML()
     #s.printJAFHTML('walmart',5)
-    s.printMissingJAFs()
+    #s.printMissingJAFs()
