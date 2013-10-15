@@ -39,6 +39,10 @@ class JAFSaver:
         except Exception as e:
             print e
 
+    def printAllJAFs(self, compname):
+        for i in range(1,6):
+            self.printJAFHTML(compname,i)
+
     def printMissingJAFs(self):
         f = open('../data/missing-comp.txt','r')
         while True:
