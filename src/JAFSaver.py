@@ -7,6 +7,13 @@ from JAFReader import JAFReader
 error_string = 'Error!!!! please try again'
 
 def writeJAFtoFile(cn, jn, html):
+    try:
+        f = open("../data/"+cn+str(jn)+".html",'r')
+        if f.read()==html:
+            f.close()
+            return
+    except IOError:
+        pass
     f = open("../data/"+cn+str(jn)+".html",'w')
     f.write(html)
     f.close()
