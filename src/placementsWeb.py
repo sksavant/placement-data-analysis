@@ -10,9 +10,10 @@ placement_login_page = "http://placements.iitb.ac.in/placements/login.jsp"
 placement_home = 'http://placements.iitb.ac.in/placements/studenthome.jsp'
 placement_jafs_page = 'http://placements.iitb.ac.in/placements/studjaf4studnew.jsp'
 jaf_base_url = 'http://placements.iitb.ac.in/placements/studjaf4studnew.jsp'
-compnameregex = re.compile('(?<=\?complogin\=)\S+(?=&)')
+compnameregex = re.compile('(?<=\?complogin\=)\S+(?=&jafsrno)')
 jafnoregex = re.compile('(?<=\&jafsrno\=)[0-9]+')
 jafpageurlregex = re.compile('http\:\/\/placements\.iitb\.ac\.in\/placements\/studjafview\.jsp\?complogin\=\S+\&jafsrno\=[0-9]+')
+signpageurlregex = re.compile('http\:\/\/placements\.iitb\.ac\.in\/placements\/studsign\.jsp\?complogin\=\S+\&jafsrno\=[0-9]+')
 
 class PlacementsWeb:
     def __init__(self):
@@ -62,13 +63,19 @@ class PlacementsWeb:
 
         assert self.br.geturl() == placement_home
 
-    def getJAFLinks(self):
+    def goToJAFsPage(self):
+        try:
+            assert self.br.geturl() == placement_jafs_page
+        except AssertionError:
+            print "Going to JAF List page first"
+            self.br.find_link(text='View / Sign JAFs')
+            req = self.br.click_link(text='View / Sign JAFs')
+            self.br.open(req)
+            #print br.response().read()
+            assert self.br.geturl() == placement_jafs_page
 
-        self.br.find_link(text='View / Sign JAFs')
-        req = self.br.click_link(text='View / Sign JAFs')
-        self.br.open(req)
-        #print br.response().read()
-        assert self.br.geturl() == placement_jafs_page
+    def getJAFLinks(self):
+        self.goToJAFsPage()
         no_of_jafs = 0
         linklist = list(self.br.links(url_regex=re.compile('studjafview')))
         print "Got links to",len(linklist),"JAFs"
@@ -79,11 +86,7 @@ class PlacementsWeb:
         #print no_of_jafs
 
     def getCompJAFPage(self, compname, jafno):
-        try:
-            assert self.br.geturl() == placement_jafs_page
-        except AssertionError:
-            print "Going to JAF List page first"
-            self.getJAFLinks()
+        self.goToJAFsPage()
         _url='studjafview.jsp?complogin='+compname+'&jafsrno='+str(jafno)
         l = Link(base_url=jaf_base_url, url=_url, text=compname, tag='a', attrs=[('href',_url)])
         req = self.br.click_link(l)
@@ -106,9 +109,39 @@ class PlacementsWeb:
         self.br.back()
         return compname,jafno,html
 
+    def getAllSignLinks(self):
+        self.goToJAFsPage()
+        linklist = list(self.br.links(url_regex=re.compile('studsign')))
+        return linklist
+
+    def getAllUnSignLinks(self):
+        self.goToJAFsPage()
+        linklist = list(self.br.links(url_regex=re.compile('studunsign')))
+        return linklist
+
+    def signJAFLink(self, l):
+        self.goToJAFsPage()
+        print l
+        compname = compnameregex.findall(l.url)[0]
+        jafno = jafnoregex.findall(l.url)[0]
+        _url='studsign.jsp?complogin='+compname+'&jafsrno='+str(jafno)
+        l = Link(base_url=jaf_base_url, url=_url, text=compname, tag='a', attrs=[('href',_url)])
+        req = self.br.click_link(l)
+        self.br.open(req)
+        print self.br.geturl()
+        assert signpageurlregex.match(self.br.geturl())
+        self.br.select_form(nr=0)
+
+        #self.br.form.set_value(['1'],name='copyno')
+        #self.br.submit()
+        #self.br.back()
+
 if __name__=='__main__':
     p = PlacementsWeb()
     p.login()
-    print p.getJAFLinks()
+    #print p.getJAFLinks()
     #jafpagetest = 'http://placements.iitb.ac.in/placements/studjafview.jsp?complogin=tsmc&jafsrno=1'
     #print jafpageurlregex.findall(jafpagetest)
+    x = p.getAllSignLinks()
+    p.signJAFLink(x[0])
+
