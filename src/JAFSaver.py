@@ -3,6 +3,7 @@
 from JAF import JAF
 from placementsWeb import PlacementsWeb
 from JAFReader import JAFReader
+import os
 
 error_string = 'Error!!!! please try again'
 
@@ -14,6 +15,8 @@ def writeJAFtoFile(cn, jn, html):
             return
     except IOError:
         pass
+    if not os.path.exists("../data"):
+        os.mkdir("../data/")
     f = open("../data/"+cn+str(jn)+".html",'w')
     f.write(html)
     f.close()
