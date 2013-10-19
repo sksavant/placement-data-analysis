@@ -46,12 +46,16 @@ class JAFSaver:
         try:
             cn,jn,html = self.p.getCompJAFPage(compname, jafno)
             writeJAFtoFile(cn,jn,html)
+            return True
         except Exception as e:
             print e
+            return False
 
     def printAllJAFs(self, compname):
-        for i in range(1,6):
-            self.printJAFHTML(compname,i)
+        i=1
+        while self.printJAFHTML(compname,i):
+            print "Getting JAF number",i
+            i=i+1
 
     def printMissingJAFs(self):
         f = open('../data/missing-comp.txt','r')
