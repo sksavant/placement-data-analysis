@@ -16,3 +16,5 @@ Uses [mechanize](http://wwwsearch.sourceforge.net/mechanize) to emulate a browse
   - Resolving duplicates
   - Reading data from disk
   - Storing new data
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/d314404889a0aafd96e6a291c0f9c806 "githalytics.com")](http://githalytics.com/sksavant/placement-data-analysis)
